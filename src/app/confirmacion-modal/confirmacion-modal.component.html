@@ -1,0 +1,13 @@
+<div class="modal-header">
+  <h4 class="modal-title" id="modal-title">Confirmación</h4>
+  <button type="button" class="close" aria-label="Close button" aria-describedby="modal-title" (click)="modal.dismiss('Cross click')">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<div class="modal-body">
+  <p>¿Seguro que desea <strong>{{ accion }}</strong> el registro?</p>
+</div>
+<div class="modal-footer">
+  <button type="button" [ngClass]="{'btn': true, 'btn-secondary': movil, 'btn-outline-secondary': !movil}" (click)="modal.dismiss('cancel click')">Cancelar</button>
+  <button type="button" ngbAutofocus [ngClass]="{'btn': true, 'btn-primary': movil, 'btn-outline-primary': !movil}" (click)="modal.close('ok click')">Aceptar</button>
+</div>

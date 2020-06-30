@@ -1,0 +1,45 @@
+<div class="container mt-5 p-5 shadow rounded">
+  <div class="mb-4 d-flex justify-content-between">
+    <div>
+      <fa-icon icon="user-friends" size="2x"></fa-icon>
+      <span class="font-weight-bolder h2 ml-3">Empleados</span>
+      <div class="spinner-border text-info ml-3" role="status" *ngIf="procesando">
+        <span class="sr-only">Procesando...</span>
+      </div>
+    </div>
+    <button class="btn btn-primary rounded-pill" (click)="nuevo()">
+      <fa-icon icon="user-plus"></fa-icon>
+      <span class="ml-1">Adicionar</span>
+    </button>
+  </div>
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th scope="col">#</th>
+        <th scope="col">Cédula</th>
+        <th scope="col">Nombre</th>
+        <th scope="col">Edad</th>
+        <th scope="col">Ciudad</th>
+        <th scope="col">Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let empleado of listaEmpleados; index as i">
+        <td>{{ i + 1 }}</td>
+        <td>{{ empleado.cedula }}</td>
+        <td>{{ empleado.nombre | titlecase }}</td>
+        <td>{{ empleado.edad | number }}</td>
+        <td>{{ empleado.ciudad | titlecase }}</td>
+        <td>
+          <button class="btn" (click)="editar(empleado)"><fa-icon icon="edit"></fa-icon></button>
+          <button class="btn" (click)="borrar(empleado.codigo)"><fa-icon icon="trash-alt"></fa-icon></button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <form [formGroup]="formulario">
+    <div class="form-group form-inline">
+      Buscar: <input class="form-control ml-2" type="search" [formControl]="campoBuscar"/>
+    </div>
+  </form>
+</div>

@@ -1,0 +1,12 @@
+<div class="modal-header">
+  <h4 class="modal-title" id="modal-title">{{ titulo }}</h4>
+  <button type="button" class="close" aria-label="Close button" aria-describedby="modal-title" (click)="modal.dismiss('Cross click')">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<div class="modal-body">
+  <p>{{ mensaje }}</p>
+</div>
+<div class="modal-footer">
+  <button type="button" ngbAutofocus [ngClass]="{'btn': true, 'btn-dark': movil, 'btn-outline-dark': !movil}" (click)="modal.close('ok click')">Aceptar</button>
+</div>
