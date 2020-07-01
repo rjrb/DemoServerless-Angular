@@ -9,12 +9,10 @@ import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 export class ConfirmacionModal implements OnInit {
 
   @Input() accion: string;
-  movil: boolean;
 
   constructor(public modal: NgbActiveModal) {}
 
   ngOnInit(): void {
-    this.movil = window.innerWidth <= 768;
   }
 
 }

@@ -10,12 +10,10 @@ export class AlertaModal implements OnInit {
 
   @Input() titulo: string;
   @Input() mensaje: string;
-  movil: boolean;
 
   constructor(public modal: NgbActiveModal) {}
 
   ngOnInit(): void {
-    this.movil = window.innerWidth <= 768;
   }
 
 }

@@ -8,6 +8,6 @@
   <p>¿Seguro que desea <strong>{{ accion }}</strong> el registro?</p>
 </div>
 <div class="modal-footer">
-  <button type="button" [ngClass]="{'btn': true, 'btn-secondary': movil, 'btn-outline-secondary': !movil}" (click)="modal.dismiss('cancel click')">Cancelar</button>
-  <button type="button" ngbAutofocus [ngClass]="{'btn': true, 'btn-primary': movil, 'btn-outline-primary': !movil}" (click)="modal.close('ok click')">Aceptar</button>
+  <button type="button" class="btn btn-secondary" (click)="modal.dismiss('cancel click')">Cancelar</button>
+  <button type="button" ngbAutofocus class="btn btn-primary" (click)="modal.close('ok click')">Aceptar</button>
 </div>

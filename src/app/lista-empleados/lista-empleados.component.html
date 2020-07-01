@@ -1,45 +1,49 @@
-<div class="container mt-5 p-5 shadow rounded">
+<div class="container mt-5 pt-5 px-5 pb-3 border shadow rounded">
   <div class="mb-4 d-flex justify-content-between">
     <div>
       <fa-icon icon="user-friends" size="2x"></fa-icon>
-      <span class="font-weight-bolder h2 ml-3">Empleados</span>
+      <span class="font-weight-bolder ml-3 h2">Empleados</span>
       <div class="spinner-border text-info ml-3" role="status" *ngIf="procesando">
         <span class="sr-only">Procesando...</span>
       </div>
     </div>
-    <button class="btn btn-primary rounded-pill" (click)="nuevo()">
+    <button class="btn btn-light rounded-pill" (click)="nuevo()">
       <fa-icon icon="user-plus"></fa-icon>
       <span class="ml-1">Adicionar</span>
     </button>
   </div>
-  <table class="table table-striped">
-    <thead>
-      <tr>
-        <th scope="col">#</th>
-        <th scope="col">Cédula</th>
-        <th scope="col">Nombre</th>
-        <th scope="col">Edad</th>
-        <th scope="col">Ciudad</th>
-        <th scope="col">Acciones</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let empleado of listaEmpleados; index as i">
-        <td>{{ i + 1 }}</td>
-        <td>{{ empleado.cedula }}</td>
-        <td>{{ empleado.nombre | titlecase }}</td>
-        <td>{{ empleado.edad | number }}</td>
-        <td>{{ empleado.ciudad | titlecase }}</td>
-        <td>
-          <button class="btn" (click)="editar(empleado)"><fa-icon icon="edit"></fa-icon></button>
-          <button class="btn" (click)="borrar(empleado.codigo)"><fa-icon icon="trash-alt"></fa-icon></button>
-        </td>
-      </tr>
-    </tbody>
-  </table>
+  <div class="table-responsive mb-2">
+    <table class="table table-striped table-hover">
+      <thead>
+        <tr>
+          <th scope="col">#</th>
+          <th scope="col">Cédula</th>
+          <th scope="col">Nombre</th>
+          <th scope="col">Edad</th>
+          <th scope="col">Ciudad</th>
+          <th scope="col">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let empleado of listaEmpleados; index as i">
+          <td>{{ i + 1 }}</td>
+          <td>{{ empleado.cedula }}</td>
+          <td>{{ empleado.nombre | titlecase }}</td>
+          <td>{{ empleado.edad | number }}</td>
+          <td>{{ empleado.ciudad | titlecase }}</td>
+          <td>
+            <button class="btn mr-3 text-secondary" style="padding: 0" (click)="editar(empleado)"><fa-icon icon="edit"></fa-icon></button>
+            <button class="btn text-danger" style="padding: 0" (click)="borrar(empleado.codigo)"><fa-icon icon="trash-alt"></fa-icon></button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
   <form [formGroup]="formulario">
     <div class="form-group form-inline">
-      Buscar: <input class="form-control ml-2" type="search" [formControl]="campoBuscar"/>
+      <label for="buscar">Buscar:</label>
+      <input class="form-control ml-2" id="buscar" type="search" [formControl]="campoBuscar"/>
     </div>
   </form>
+  <ngb-alert *ngIf="mensajeExito" type="success" (close)="mensajeExito = ''">{{ mensajeExito }}</ngb-alert>
 </div>

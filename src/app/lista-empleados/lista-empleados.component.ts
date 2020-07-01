@@ -7,6 +7,7 @@ import {NgbModal, NgbModalRef} from "@ng-bootstrap/ng-bootstrap";
 import {FormularioModal} from "../formulario-modal/formulario-modal.component";
 import {ConfirmacionModal} from "../confirmacion-modal/confirmacion-modal.component";
 import {AlertaModal} from "../alerta-modal/alerta-modal.component";
+import {interval} from "rxjs";
 
 @Component({
   selector: 'app-lista-empleados',
@@ -19,6 +20,7 @@ export class ListaEmpleadosComponent implements OnInit {
   formulario: FormGroup;
   campoBuscar = new FormControl('');
   procesando = false;
+  mensajeExito = '';
 
   constructor(
     private empleadosService: EmpleadosService,
@@ -75,11 +77,10 @@ export class ListaEmpleadosComponent implements OnInit {
     modalRef.result.then(result => {
       console.log(result);
       this.consultar();
-      const modalRef: NgbModalRef = this.modalService.open(AlertaModal);
-      modalRef.componentInstance.titulo = "Éxito";
-      modalRef.componentInstance.mensaje = "Operación exitosa";
+      this.mensajeExito = 'Operación exitosa';
+      interval(10000).subscribe(() => this.mensajeExito = '');
     }, reason => {
-      console.log("Descartado", reason);
+        console.log("Descartado", reason);
     });
   }
 
@@ -110,7 +111,7 @@ export class ListaEmpleadosComponent implements OnInit {
   borrar(codigo: string): void {
     const modalRef: NgbModalRef = this.modalService.open(ConfirmacionModal);
     modalRef.componentInstance.accion = "eliminar";
-    modalRef.result.then(result => {
+    modalRef.result.then(() => {
       this.procesando = true;
       this.empleadosService.delete(codigo).subscribe({
         next: () => {
@@ -124,7 +125,9 @@ export class ListaEmpleadosComponent implements OnInit {
           this.procesando = false;
         }
       })
-    })
+    }, () => {
+      console.log("Descartado");
+    });
   }
 
 }
