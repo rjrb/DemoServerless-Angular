@@ -1,26 +1,29 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {EmpleadosService} from "../servicios/empleados.service";
 import {EmpleadoResponse} from "../interfaces/empleado-response";
 import {FormControl, FormGroup} from "@angular/forms";
-import {debounceTime, distinctUntilChanged, map, startWith} from "rxjs/operators";
+import {debounceTime, distinctUntilChanged, startWith, switchMap, take} from "rxjs/operators";
 import {NgbModal, NgbModalRef} from "@ng-bootstrap/ng-bootstrap";
 import {FormularioModal} from "../formulario-modal/formulario-modal.component";
 import {ConfirmacionModal} from "../confirmacion-modal/confirmacion-modal.component";
 import {AlertaModal} from "../alerta-modal/alerta-modal.component";
-import {interval} from "rxjs";
+import {HttpErrorResponse} from "@angular/common/http";
+import {interval, of, Subscription} from "rxjs";
 
 @Component({
   selector: 'app-lista-empleados',
   templateUrl: './lista-empleados.component.html',
   styleUrls: ['./lista-empleados.component.scss']
 })
-export class ListaEmpleadosComponent implements OnInit {
+export class ListaEmpleadosComponent implements OnInit, OnDestroy {
 
   listaEmpleados: EmpleadoResponse[];
   formulario: FormGroup;
   campoBuscar = new FormControl('');
   procesando = false;
   mensajeExito = '';
+  mensajeError = '';
+  cierreMensajes$: Subscription;
 
   constructor(
     private empleadosService: EmpleadosService,
@@ -38,11 +41,14 @@ export class ListaEmpleadosComponent implements OnInit {
       startWith(''),
       debounceTime(400),
       distinctUntilChanged(),
-      map(texto => this.buscar(texto))
+      switchMap(texto => of(this.buscar(texto)))
     ).subscribe();
   }
 
   consultar(): void {
+    this.cierreMensajes$?.unsubscribe();
+    this.mensajeError = this.mensajeExito = '';
+
     this.procesando = true;
     this.empleadosService.getAll().subscribe({
       next: empleados => {
@@ -52,12 +58,16 @@ export class ListaEmpleadosComponent implements OnInit {
       },
       error: err => {
         this.listaEmpleados = [];
-        console.log("Error consultando todos los empleados");
-        console.log(err);
         this.procesando = false;
-        const modalRef: NgbModalRef = this.modalService.open(AlertaModal);
-        modalRef.componentInstance.titulo = "Error";
-        modalRef.componentInstance.mensaje = "Error consultando todos los empleados";
+        if(err instanceof HttpErrorResponse) {
+          let httpError: HttpErrorResponse = err as HttpErrorResponse;
+          if(httpError.status == 404) {
+            this.mensajeError = 'No hay empleados registrados';
+            this.cierreMensajes$ = interval(5000).pipe(take(1)).subscribe(() => this.mensajeError = '');
+            return;
+          }
+        }
+        this.mostrarError("Error consultando todos los empleados", err);
       }
     })
   }
@@ -74,17 +84,23 @@ export class ListaEmpleadosComponent implements OnInit {
   }
 
   persistencia(modalRef: NgbModalRef): void {
+    this.cierreMensajes$?.unsubscribe();
+    this.mensajeError = this.mensajeExito = '';
+
     modalRef.result.then(result => {
       console.log(result);
       this.consultar();
       this.mensajeExito = 'Operación exitosa';
-      interval(10000).subscribe(() => this.mensajeExito = '');
+      this.cierreMensajes$ = interval(10000).pipe(take(1)).subscribe(() => this.mensajeExito = '');
     }, reason => {
         console.log("Descartado", reason);
     });
   }
 
   buscar(query: string): void {
+    this.cierreMensajes$?.unsubscribe();
+    this.mensajeError = this.mensajeExito = '';
+
     if(!query) {
       this.consultar();
       return;
@@ -101,9 +117,16 @@ export class ListaEmpleadosComponent implements OnInit {
       },
       error: err => {
         this.listaEmpleados = [];
-        console.log("Error buscando empleados");
-        console.log(err);
         this.procesando = false;
+        if(err instanceof HttpErrorResponse) {
+          let httpError: HttpErrorResponse = err as HttpErrorResponse;
+          if(httpError.status == 404) {
+            this.mensajeError = `No se hallaron empleados para el filtro '${filtro}'`;
+            this.cierreMensajes$ = interval(5000).pipe(take(1)).subscribe(() => this.mensajeError = '');
+            return;
+          }
+        }
+        this.mostrarError("Error buscando empleados", err);
       }
     });
   }
@@ -120,14 +143,25 @@ export class ListaEmpleadosComponent implements OnInit {
           this.procesando = false;
         },
         error: err => {
-          console.log("Error eliminando el registro");
-          console.log(err);
           this.procesando = false;
+          this.mostrarError("Error eliminando el registro", err);
         }
       })
     }, () => {
       console.log("Descartado");
     });
+  }
+
+  mostrarError(mensaje: string, err: any): void {
+    console.log(mensaje);
+    console.log(err);
+    const modalRef: NgbModalRef = this.modalService.open(AlertaModal);
+    modalRef.componentInstance.titulo = "Error";
+    modalRef.componentInstance.mensaje = mensaje;
+  }
+
+  ngOnDestroy(): void {
+    this.cierreMensajes$?.unsubscribe();
   }
 
 }

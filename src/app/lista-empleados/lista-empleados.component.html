@@ -46,4 +46,5 @@
     </div>
   </form>
   <ngb-alert *ngIf="mensajeExito" type="success" (close)="mensajeExito = ''">{{ mensajeExito }}</ngb-alert>
+  <ngb-alert *ngIf="mensajeError" type="warning" (close)="mensajeError = ''">{{ mensajeError }}</ngb-alert>
 </div>
