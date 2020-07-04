@@ -5,7 +5,8 @@
 export const environment = {
   production: false,
   urlApi: 'https://fsoid556fa.execute-api.us-west-1.amazonaws.com/v1',      // SpringBoot
-  //urlApi: 'https://b3e0a8vqnb.execute-api.us-west-1.amazonaws.com/v1',    // Lambda
+  //urlApi: 'https://b3e0a8vqnb.execute-api.us-west-1.amazonaws.com/v1',      // Lambda
+  //urlApi: 'http://localhost:8080',                                            // Local
 };
 
 /*
