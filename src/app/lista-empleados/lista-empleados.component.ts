@@ -2,7 +2,7 @@ import {Component, OnDestroy, OnInit} from '@angular/core';
 import {EmpleadosService} from "../servicios/empleados.service";
 import {EmpleadoResponse} from "../interfaces/empleado-response";
 import {FormControl, FormGroup} from "@angular/forms";
-import {debounceTime, distinctUntilChanged, startWith, switchMap, take} from "rxjs/operators";
+import {debounceTime, distinctUntilChanged, first, startWith, switchMap, take} from "rxjs/operators";
 import {NgbModal, NgbModalRef} from "@ng-bootstrap/ng-bootstrap";
 import {FormularioModal} from "../formulario-modal/formulario-modal.component";
 import {ConfirmacionModal} from "../confirmacion-modal/confirmacion-modal.component";
@@ -91,7 +91,7 @@ export class ListaEmpleadosComponent implements OnInit, OnDestroy {
       console.log(result);
       this.consultar();
       this.mensajeExito = 'Operación exitosa';
-      this.cierreMensajes$ = interval(10000).pipe(take(1)).subscribe(() => this.mensajeExito = '');
+      this.cierreMensajes$ = interval(10000).pipe(first()).subscribe(() => this.mensajeExito = '');
     }, reason => {
         console.log("Descartado", reason);
     });
@@ -122,7 +122,7 @@ export class ListaEmpleadosComponent implements OnInit, OnDestroy {
           let httpError: HttpErrorResponse = err as HttpErrorResponse;
           if(httpError.status == 404) {
             this.mensajeError = `No se hallaron empleados para el filtro '${filtro}'`;
-            this.cierreMensajes$ = interval(5000).pipe(take(1)).subscribe(() => this.mensajeError = '');
+            this.cierreMensajes$ = interval(5000).pipe(first()).subscribe(() => this.mensajeError = '');
             return;
           }
         }
