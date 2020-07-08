@@ -35,8 +35,6 @@ export class ListaEmpleadosComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.consultar();
-
     this.campoBuscar.valueChanges.pipe(
       startWith(''),
       debounceTime(400),
