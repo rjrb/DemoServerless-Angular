@@ -9,21 +9,21 @@
     <div class="form-row">
       <div class="form-group col-md-4">
         <label for="cedula">Cédula</label>
-        <input type="text" class="form-control" id="cedula" formControlName="campoCedula" autofocus>
+        <input type="text" [ngClass]="{'form-control': true, 'is-invalid': formulario.get('campoCedula').errors && formulario.get('campoCedula').dirty}" id="cedula" formControlName="campoCedula" autofocus>
       </div>
       <div class="form-group col-md-8">
         <label for="nombre">Nombre</label>
-        <input type="text" class="form-control" id="nombre" formControlName="campoNombre">
+        <input type="text" [ngClass]="{'form-control': true, 'is-invalid': formulario.get('campoNombre').errors && formulario.get('campoNombre').dirty}" id="nombre" formControlName="campoNombre">
       </div>
     </div>
     <div class="form-row">
       <div class="form-group col-md-3">
         <label for="edad">Edad</label>
-        <input type="number" class="form-control" id="edad" formControlName="campoEdad">
+        <input type="number" [ngClass]="{'form-control': true, 'is-invalid': formulario.get('campoEdad').errors && formulario.get('campoEdad').dirty}" id="edad" formControlName="campoEdad">
       </div>
       <div class="form-group col-md-9">
         <label for="ciudad">Ciudad</label>
-        <input type="text" class="form-control" id="ciudad" formControlName="campoCiudad">
+        <input type="text" [ngClass]="{'form-control': true, 'is-invalid': formulario.get('campoCiudad').errors && formulario.get('campoCiudad').dirty}" id="ciudad" formControlName="campoCiudad">
       </div>
     </div>
   </form>

@@ -2,11 +2,12 @@ import {Component, Input, OnInit} from '@angular/core';
 import {NgbActiveModal, NgbModal, NgbModalRef} from "@ng-bootstrap/ng-bootstrap";
 import {EmpleadoResponse} from "../interfaces/empleado-response";
 import {EmpleadosService} from "../servicios/empleados.service";
-import {FormBuilder, FormGroup, Validators} from "@angular/forms";
+import {FormBuilder, FormGroup, ValidationErrors, Validators} from "@angular/forms";
 import {EmpleadoRequest} from "../interfaces/empleado-request";
 import {Observable} from "rxjs";
 import {ConfirmacionModal} from "../confirmacion-modal/confirmacion-modal.component";
 import {AlertaModal} from "../alerta-modal/alerta-modal.component";
+import {debounceTime} from "rxjs/operators";
 
 @Component({
   selector: 'app-formulario',
@@ -28,10 +29,16 @@ export class FormularioModal implements OnInit {
     private formBuilder: FormBuilder
   ) {
     this.formulario = this.formBuilder.group({
-      campoCedula: ['', Validators.required],
-      campoNombre: ['', Validators.required],
-      campoEdad: ['', [Validators.required, Validators.pattern("^[0-9]*$")]],
-      campoCiudad: ['', Validators.required],
+      campoCedula: ['', [Validators.required, Validators.maxLength(15)]],
+      campoNombre: ['', [Validators.required, Validators.maxLength(50)]],
+      campoEdad: ['', [Validators.required, Validators.pattern("^[0-9]*$"), Validators.min(18), Validators.max(62)]],
+      campoCiudad: ['', [Validators.required, Validators.maxLength(25)]],
+    });
+
+    this.formulario.statusChanges.pipe(debounceTime(500)).subscribe(change => {
+      if(change === 'INVALID') {
+        this.getErrorerFormulario();
+      }
     });
   }
 
@@ -56,7 +63,7 @@ export class FormularioModal implements OnInit {
   guardar() {
     const modalRef: NgbModalRef = this.modalService.open(ConfirmacionModal);
     modalRef.componentInstance.accion = this.textoGuardar.toLowerCase();
-    modalRef.result.then(result => {
+    modalRef.result.then(() => {
 
       this.procesando = true;
       let request: EmpleadoRequest = {
@@ -88,7 +95,17 @@ export class FormularioModal implements OnInit {
           modalRef.componentInstance.mensaje = `Error persistiendo el empleado: ${err.error.error || 'desconocido'}`;
         }
       });
+    });
+  }
 
+  getErrorerFormulario(): void {
+    Object.keys(this.formulario.controls).forEach(key => {
+      const controlErrors: ValidationErrors = this.formulario.get(key).errors;
+      if (controlErrors != null) {
+        Object.keys(controlErrors).forEach(keyError => {
+          console.log('Campo: ' + key + ', Error: ' + keyError + ', Detalle: ', controlErrors[keyError]);
+        });
+      }
     });
   }
 
